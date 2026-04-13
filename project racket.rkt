@@ -27,17 +27,20 @@
 ;      ..     (place-image rect at x and y on grid))
 
 (define (draw-grid grid n m N solid_c inline_c)
-  (local [define s (empty-scene (* n N) (* m N))])
-  
-  (for ([i (in-range 0 (vector-length grid))])
-    (for ([j (in-range 0 (vector-length (vector-ref grid i)))])
-      (display i)
-      (display j)
-    )
-  )
-)
+  (define base (empty-scene (+(* n N) 1) (+(* m N) 1)))
+  (define half (/ N 2.0))
+  (for/fold ([scene base])([i (in-range 0 (vector-length grid))])
+    (define y (+ (* i N) half))
+    
+    (for/fold ([inner-scene scene])([j (in-range 0 (vector-length (vector-ref grid i)))])
+      (define x (+ (* j N) half))
+      (place-image (rectangle N N "outline" inline_c)
+                   x y
+                   (place-image (rectangle N N "solid" solid_c)
+                                x y
+                                inner-scene)))))
 
-
+(draw-grid (get-grid 10 6) 10 6 50 "dark green" "black")
 
 
 
